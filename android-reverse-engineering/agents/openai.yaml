@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Reverse Engineering"
+  short_description: "Decompile APKs and extract Android APIs"
+  default_prompt: "Use $android-reverse-engineering to decompile an Android package, trace call flows, and extract API endpoints."
