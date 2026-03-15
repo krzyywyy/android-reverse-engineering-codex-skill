@@ -1,238 +1,240 @@
 # Setup Guide: Dependencies for Android Reverse Engineering
 
-## Windows Notes
+Use this guide to install the toolchain required by the Codex skill.
 
-Use WSL or Git Bash to run the bundled `scripts/*.sh` helpers. Native PowerShell can still be used to install tools manually, but the helper scripts assume a Unix-like shell environment.
+Required:
 
-If you stay on native Windows, install the tools from their official release pages, then add them to `PATH`:
+- Java JDK 17+
+- `jadx`
 
-- Install Java JDK 17+ and verify with `java -version`.
-- Download the latest `jadx-<version>.zip`, extract it, and add its `bin` directory to `PATH`.
-- Download `vineflower-<version>.jar` if you want Fernflower/Vineflower output, then set `FERNFLOWER_JAR_PATH` to the full jar path.
-- Download and extract `dex2jar` if you want to run Fernflower against APK or DEX inputs, then add its directory to `PATH`.
+Recommended:
 
-In PowerShell, set the Fernflower path for future sessions with:
+- `vineflower` or another Fernflower-compatible JAR
+- `dex2jar`
+- `apktool`
+- `adb`
+
+## Windows
+
+### Recommended Windows Path
+
+1. Install Git for Windows so you have Git Bash:
 
 ```powershell
-setx FERNFLOWER_JAR_PATH "C:\path\to\vineflower.jar"
+winget install --id Git.Git --exact
 ```
 
-## Java JDK 17+
+2. Install the Codex skill into `~/.codex/skills/android-reverse-engineering`.
 
-jadx requires Java 17 or later.
+3. Run the bundled Windows helper:
 
-### Ubuntu / Debian
+```powershell
+powershell -ExecutionPolicy Bypass -File "$HOME/.codex/skills/android-reverse-engineering/scripts/install-deps-windows.ps1" -InstallAll
+```
+
+4. Restart your shell after the installer updates user-level environment variables.
+
+5. Verify from Git Bash:
+
+```bash
+bash "$HOME/.codex/skills/android-reverse-engineering/scripts/check-deps.sh"
+```
+
+### Manual Windows Installation
+
+If you do not want to use the PowerShell helper, install each dependency manually:
+
+#### Java JDK 17+
+
+Recommended:
+
+```powershell
+winget install --id EclipseAdoptium.Temurin.17.JDK --exact
+```
+
+Verify:
+
+```powershell
+java -version
+```
+
+#### jadx
+
+1. Download the latest Windows release from <https://github.com/skylot/jadx/releases/latest>
+2. Extract it to a stable directory, for example `C:\Users\<you>\.local\share\jadx`
+3. Add `C:\Users\<you>\.local\share\jadx\bin` to your `PATH`
+
+Verify:
+
+```powershell
+jadx --version
+```
+
+#### Vineflower
+
+1. Download the latest JAR from <https://github.com/Vineflower/vineflower/releases/latest>
+2. Save it as `C:\Users\<you>\vineflower\vineflower.jar`
+3. Set `FERNFLOWER_JAR_PATH`
+
+```powershell
+setx FERNFLOWER_JAR_PATH "C:\Users\<you>\vineflower\vineflower.jar"
+```
+
+Verify:
+
+```powershell
+java -jar "$env:FERNFLOWER_JAR_PATH" --version
+```
+
+#### dex2jar
+
+1. Download the latest release from <https://github.com/pxb1988/dex2jar/releases/latest>
+2. Extract it to a stable directory
+3. Add the extracted directory to `PATH`
+
+Verify:
+
+```powershell
+d2j-dex2jar --help
+```
+
+#### apktool
+
+1. Download the latest JAR from <https://github.com/iBotPeaches/Apktool/releases/latest>
+2. Save it somewhere stable, for example `C:\Users\<you>\.local\share\apktool\apktool.jar`
+3. Create an `apktool.cmd` wrapper or invoke it with `java -jar`
+
+Verify:
+
+```powershell
+java -jar C:\Users\<you>\.local\share\apktool\apktool.jar --version
+```
+
+#### adb
+
+Recommended:
+
+```powershell
+winget install --id Google.PlatformTools --exact
+```
+
+Verify:
+
+```powershell
+adb version
+```
+
+## Ubuntu / Debian
+
+Install Java:
 
 ```bash
 sudo apt update
 sudo apt install openjdk-17-jdk
 ```
 
-### Fedora
+Install optional tools from packages where available:
+
+```bash
+sudo apt install adb apktool
+```
+
+Install the rest through the bundled helper after the skill is copied into `~/.codex/skills`:
+
+```bash
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh jadx
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh vineflower
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh dex2jar
+```
+
+Verify:
+
+```bash
+bash ~/.codex/skills/android-reverse-engineering/scripts/check-deps.sh
+```
+
+## Fedora
+
+Install Java:
 
 ```bash
 sudo dnf install java-17-openjdk-devel
 ```
 
-### Arch Linux
+Optional packages:
 
 ```bash
-sudo pacman -S jdk17-openjdk
+sudo dnf install android-tools apktool
 ```
 
-### macOS (Homebrew)
+Then use the bundled helper for the remaining tools:
+
+```bash
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh jadx
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh vineflower
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh dex2jar
+```
+
+## Arch Linux
+
+Install Java and adb:
+
+```bash
+sudo pacman -S jdk17-openjdk android-tools
+```
+
+Install the rest with the bundled helper:
+
+```bash
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh jadx
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh vineflower
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh dex2jar
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh apktool
+```
+
+## macOS
+
+Install Java:
 
 ```bash
 brew install openjdk@17
 ```
 
-After installation on macOS, follow the symlink instructions printed by Homebrew, or add to your shell profile:
+Install available optional tools:
 
 ```bash
-export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+brew install android-platform-tools apktool
 ```
 
-### Verify
+Install the rest with the bundled helper:
 
 ```bash
-java -version
-# Should show version 17.x or higher
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh jadx
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh vineflower
+bash ~/.codex/skills/android-reverse-engineering/scripts/install-dep.sh dex2jar
 ```
 
----
+If Homebrew asks you to update your shell profile for Java, do that before verifying.
 
-## jadx
+## Verification
 
-jadx is the Java decompiler used to convert APK/JAR/AAR files to readable Java source.
-
-### Option 1: GitHub Releases (recommended)
-
-1. Go to <https://github.com/skylot/jadx/releases/latest>
-2. Download the `jadx-<version>.zip` file (not the source archive)
-3. Extract and add to PATH:
+Run the dependency checker:
 
 ```bash
-unzip jadx-*.zip -d ~/jadx
-export PATH="$HOME/jadx/bin:$PATH"
-# Add the export line to your ~/.bashrc or ~/.zshrc for persistence
+bash ~/.codex/skills/android-reverse-engineering/scripts/check-deps.sh
 ```
 
-### Option 2: Homebrew (macOS / Linux)
+Expected result:
 
-```bash
-brew install jadx
-```
-
-### Option 3: Build from source
-
-```bash
-git clone https://github.com/skylot/jadx.git
-cd jadx
-./gradlew dist
-# Binaries will be in build/jadx/bin/
-export PATH="$(pwd)/build/jadx/bin:$PATH"
-```
-
-### Verify
-
-```bash
-jadx --version
-```
-
----
-
-## Fernflower / Vineflower (optional, recommended)
-
-Fernflower is the JetBrains Java decompiler. It produces better output than jadx on complex Java constructs, lambdas, and generics. [Vineflower](https://github.com/Vineflower/vineflower) is the actively maintained community fork with published releases — prefer it over upstream Fernflower.
-
-### Option 1: Vineflower from GitHub Releases (recommended)
-
-1. Go to <https://github.com/Vineflower/vineflower/releases/latest>
-2. Download `vineflower-<version>.jar`
-3. Place it and set the environment variable:
-
-```bash
-mkdir -p ~/vineflower
-mv vineflower-*.jar ~/vineflower/vineflower.jar
-export FERNFLOWER_JAR_PATH="$HOME/vineflower/vineflower.jar"
-# Add the export to ~/.bashrc or ~/.zshrc for persistence
-```
-
-### Option 2: Build Fernflower from source
-
-```bash
-git clone https://github.com/JetBrains/fernflower.git
-cd fernflower
-./gradlew jar
-# Produces: build/libs/fernflower.jar
-export FERNFLOWER_JAR_PATH="$(pwd)/build/libs/fernflower.jar"
-```
-
-### Option 3: Homebrew (Vineflower)
-
-```bash
-brew install vineflower
-```
-
-### Verify
-
-```bash
-java -jar "$FERNFLOWER_JAR_PATH" --version
-```
-
-> **Note**: Fernflower only works on JVM bytecode (JAR, class files). For APK/DEX files, you also need **dex2jar** (see below) as an intermediate conversion step.
-
----
-
-## dex2jar (optional, needed for Fernflower on APK files)
-
-Converts Android DEX bytecode to standard Java JAR files.
-
-### GitHub Releases
-
-1. Go to <https://github.com/pxb1988/dex2jar/releases/latest>
-2. Download and extract:
-
-```bash
-unzip dex-tools-*.zip -d ~/dex2jar
-export PATH="$HOME/dex2jar:$PATH"
-```
-
-### Homebrew
-
-```bash
-brew install dex2jar
-```
-
-### Verify
-
-```bash
-d2j-dex2jar --help
-```
-
-### Usage
-
-```bash
-# Convert APK (or DEX) to JAR
-d2j-dex2jar -f -o output.jar app.apk
-
-# Then decompile with Fernflower
-java -jar vineflower.jar output.jar decompiled/
-```
-
----
-
-## Optional Tools
-
-### apktool
-
-Useful for decoding resources (XML layouts, drawables) that jadx sometimes handles poorly.
-
-```bash
-# Ubuntu/Debian
-sudo apt install apktool
-
-# macOS
-brew install apktool
-
-# Manual: https://apktool.org/docs/install
-```
-
-### adb (Android Debug Bridge)
-
-Useful for pulling APKs directly from a connected Android device.
-
-```bash
-# Ubuntu/Debian
-sudo apt install adb
-
-# macOS
-brew install android-platform-tools
-```
-
-Pull an APK from a device:
-
-```bash
-# List installed packages
-adb shell pm list packages | grep <keyword>
-
-# Get APK path
-adb shell pm path com.example.app
-
-# Pull the APK
-adb pull /data/app/com.example.app-xxxx/base.apk ./app.apk
-```
-
----
+- `Java` and `jadx` must be detected.
+- `vineflower`, `dex2jar`, `apktool`, and `adb` should also be detected for the best workflow.
 
 ## Troubleshooting
 
-| Problem | Solution |
+| Problem | Fix |
 |---|---|
-| `jadx: command not found` | Ensure the jadx `bin/` directory is in your `$PATH` |
-| `Error: Could not find or load main class` | Java is missing or wrong version — verify with `java -version` |
-| jadx runs out of memory on large APKs | Increase heap: `jadx -Xmx4g -d output app.apk` or set `JAVA_OPTS="-Xmx4g"` |
-| Decompiled code has many `// Error` comments | Try `--show-bad-code` to see partial output, or use `--deobf` for obfuscated apps |
-| Fernflower hangs on a method | Use `-mpm=60` to set a 60-second timeout per method |
-| Fernflower JAR not found | Set `FERNFLOWER_JAR_PATH` env variable to the full path of the JAR |
-| dex2jar fails with `ZipException` | The APK may have a non-standard ZIP structure — try `jadx` instead |
+| `jadx: command not found` | Ensure the jadx `bin` directory is on `PATH`, or reinstall it with the helper |
+| `java` is present but the wrong version | Install JDK 17+ and restart the shell |
+| `FERNFLOWER_JAR_PATH` is missing | Point it at the Vineflower or Fernflower JAR and restart the shell |
+| `d2j-dex2jar` is missing | Add the extracted dex2jar directory to `PATH` |
+| `adb` is missing on Windows | Install `Google.PlatformTools` with `winget` or extract platform-tools manually |

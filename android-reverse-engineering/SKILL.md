@@ -15,7 +15,7 @@ Resolve the installed skill directory before running bundled scripts:
 SKILL_DIR="${CODEX_HOME:-$HOME/.codex}/skills/android-reverse-engineering"
 ```
 
-On Windows, prefer running the shell scripts from WSL or Git Bash. The dependency installer automates Linux and macOS package managers; on Windows, follow the manual steps in `references/setup-guide.md`.
+On Windows, prefer running the shell scripts from WSL or Git Bash. Use `scripts/install-deps-windows.ps1` for a user-local Windows installation, or follow the manual steps in `references/setup-guide.md`.
 
 Use this skill only for software that you own or are explicitly authorized to analyze.
 
@@ -39,6 +39,12 @@ bash "$SKILL_DIR/scripts/install-dep.sh" <dep>
 ```
 
 If the installer cannot complete automatically, use the manual instructions in `references/setup-guide.md`, then run the dependency check again.
+
+For Windows installations in the default Codex skills directory, use:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.codex\skills\android-reverse-engineering\scripts\install-deps-windows.ps1" -InstallAll
+```
 
 ## Phase 2: Decompile
 

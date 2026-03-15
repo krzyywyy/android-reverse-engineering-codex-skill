@@ -1,12 +1,15 @@
-This repository contains a Codex adaptation of:
+This repository contains a modified Codex adaptation of the following upstream work:
 
   android-reverse-engineering-skill
-  Copyright Simone Avogadro
+  Author: Simone Avogadro
+  Original target: Claude Code
   Source: https://github.com/SimoneAvogadro/android-reverse-engineering-skill
 
-Adaptation changes include:
+This repository changes the original work by:
 
-- conversion from Claude plugin/skill layout to Codex skill layout
-- Codex-compatible `SKILL.md` and `agents/openai.yaml`
-- removal of Claude-specific command/plugin metadata
-- Windows and Git Bash setup notes for Codex users
+- converting the Claude plugin layout to a Codex skill layout
+- rewriting the skill entrypoint metadata for Codex
+- adding Codex UI metadata in `agents/openai.yaml`
+- removing Claude-only command and plugin files
+- adding Codex-oriented installation and usage documentation
+- adding a Windows PowerShell dependency installer for Codex users
